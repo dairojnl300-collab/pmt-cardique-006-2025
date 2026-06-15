@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>PMT v2 — Inspección de Campo</title>
+<style>
+:root{--or:#E85D04;--or2:#FF6B1A;--ord:#C44B00;--vd:#2DC653;--rj:#E63946;--am:#FFBE0B;--bg:#111827;--bg2:#1F2937;--cd:#1E293B;--cd2:#243447;--br:#334155;--tx:#E8E8F0;--dm:rgba(240,240,245,.55)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{padding-bottom:76px;min-height:100vh}
+header{background:linear-gradient(135deg,var(--or),var(--or2) 55%,var(--ord));padding:16px 16px 12px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(232,93,4,.4)}
+.h-row{display:flex;justify-content:space-between;align-items:flex-start}
+.h-tit{font-size:24px;font-weight:900;letter-spacing:.5px;color:#fff;line-height:1;text-transform:uppercase}
+.h-sub{font-size:10px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
+.h-bdg{background:rgba(0,0,0,.25);border-radius:6px;padding:4px 8px;font-size:9px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px;text-align:right;line-height:1.4}
+.meta-bar{background:var(--bg2);padding:10px 16px;border-bottom:1px solid var(--br)}
+.meta-row{display:flex;gap:10px;margin-bottom:6px}
+.meta-row:last-child{margin-bottom:0}
+.meta-lbl{font-size:10px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.meta-bar input{width:100%;background:var(--bg);border:1px solid var(--br);border-radius:8px;color:var(--tx);font-family:inherit;font-size:12px;padding:7px 10px;outline:none;-webkit-appearance:none;appearance:none}
+.meta-bar input:focus{border-color:var(--or)}
+.meta-field{flex:1}
+.prog{background:var(--bg2);padding:12px 16px;border-bottom:1px solid var(--br)}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.prog-lbl{font-size:10px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:1px}
+.prog-pct{font-size:22px;font-weight:900;color:var(--or)}
+.bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bar-f{height:100%;background:linear-gradient(90deg,var(--or),var(--am));border-radius:3px;transition:width .4s;width:0%}
+.tabs{display:flex;overflow-x:auto;background:var(--bg2);padding:8px 16px 0;gap:6px;border-bottom:2px solid var(--br);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:8px 13px;border-radius:8px 8px 0 0;font-size:11px;font-weight:700;cursor:pointer;border:none;background:var(--cd);color:var(--dm);transition:all .2s;text-transform:uppercase;letter-spacing:.5px;text-align:center;line-height:1.2}
+.tab.active{background:var(--or);color:#fff}
+.tab .pct{display:block;font-size:14px;font-weight:900;margin-top:1px}
+.content{padding:12px 16px}
+.panel{display:none}.panel.active{display:block}
+.fc{background:var(--cd);border:1px solid var(--br);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.fc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.fc-name{font-size:11px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:1px}
+.fc-pct{font-size:20px;font-weight:900}
+.fc-coords{font-size:10px;color:var(--dm);margin-top:4px}
+.frente-actions{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.hora-frente-wrap{flex:1;display:flex;align-items:center;gap:6px}
+.hora-frente-lbl{font-size:10px;font-weight:700;color:var(--dm);white-space:nowrap}
+.hora-frente-input{background:var(--bg);border:1px solid var(--br);border-radius:8px;color:var(--tx);font-family:inherit;font-size:12px;padding:6px 8px;outline:none;-webkit-appearance:none;appearance:none;width:110px}
+.hora-frente-input:focus{border-color:var(--or)}
+.limpiar-frente-btn{background:rgba(230,57,70,.12);border:1px solid rgba(230,57,70,.3);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;color:var(--rj);font-family:inherit;font-weight:700;white-space:nowrap;transition:all .2s}
+.limpiar-frente-btn:active{background:rgba(230,57,70,.25)}
+.sec{background:var(--cd);border:1px solid var(--br);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.sec-h{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;background:var(--cd2);user-select:none;-webkit-user-select:none}
+.sec-h:active{opacity:.85}
+.sec-lbl{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.sec-ico{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sec-cnt{font-size:11px;font-weight:600;color:var(--dm);margin-right:6px}
+.chv{font-size:11px;color:var(--dm);display:inline-block;transition:transform .25s}
+.sec.open .chv{transform:rotate(180deg)}
+.sec-b{display:none}.sec.open .sec-b{display:block}
+.item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;-webkit-user-select:none;user-select:none;flex-wrap:wrap}
+.item:last-child{border-bottom:none}
+.item.done{background:rgba(45,198,83,.04)}
+.chk{flex-shrink:0;width:22px;height:22px;border-radius:6px;border:2px solid #4B5563;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;transition:all .18s;margin-top:1px}
+.item.done .chk{background:var(--vd);border-color:var(--vd)}
+.item-t{flex:1;font-size:13px;line-height:1.4;transition:all .18s}
+.item.done .item-t{color:var(--dm);text-decoration:line-through}
+.crit{flex-shrink:0;background:rgba(230,57,70,.18);color:var(--rj);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;margin-top:3px;white-space:nowrap}
+.item-actions{display:flex;gap:6px;margin-left:auto}
+.edit-btn,.delete-btn{background:var(--cd2);border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;color:var(--dm);transition:all .2s}
+.edit-btn:hover,.delete-btn:hover{background:var(--or);color:#fff}
+.cumple-row{display:flex;gap:12px;margin-left:32px;margin-bottom:8px;margin-top:-4px;flex-wrap:wrap}
+.btn-cumple{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;background:var(--bg);border:1px solid var(--br);color:var(--dm);transition:all .2s}
+.btn-cumple.activo-si{background:rgba(45,198,83,.2);border-color:var(--vd);color:#4ade80}
+.btn-cumple.activo-no{background:rgba(230,57,70,.2);border-color:var(--rj);color:#f87171}
+.nc-cat-wrap{margin-left:32px;margin-bottom:8px;margin-top:-2px}
+.nc-cat-sel{width:100%;background:var(--bg);border:1px solid rgba(230,57,70,.3);border-radius:7px;color:var(--tx);font-family:inherit;font-size:11px;padding:5px 8px;outline:none;-webkit-appearance:none;appearance:none}
+.nc-cat-sel:focus{border-color:var(--rj)}
+/* Bug #8: críticos sin calificar — borde parpadeante */
+@keyframes pulse-warn{0%,100%{border-color:rgba(255,190,11,.3)}50%{border-color:var(--am)}}
+.warn-crit{animation:pulse-warn 1.5s ease-in-out infinite;border-color:var(--am)!important}
+.add-item-btn{background:var(--cd2);border:1px solid var(--br);border-radius:10px;padding:8px 12px;margin:8px 0 16px 0;cursor:pointer;font-size:12px;color:var(--dm);display:flex;align-items:center;gap:8px;justify-content:center;width:100%}
+.add-item-btn:hover{background:var(--or);color:#fff}
+.nota-w{background:var(--cd);border:1px solid var(--br);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.nota-lbl{padding:8px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--dm);background:var(--cd2);border-bottom:1px solid var(--br)}
+.nota-w textarea{width:100%;background:transparent;border:none;color:var(--tx);font-family:inherit;font-size:13px;padding:10px 14px;resize:none;min-height:68px;outline:none}
+.nota-w textarea::placeholder{color:var(--dm)}
+.inc-w{background:rgba(230,57,70,.07);border:1px solid rgba(230,57,70,.28);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.inc-tit{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--rj);margin-bottom:10px}
+.inc-w select,.inc-w input[type=text],.inc-w input[type=time]{width:100%;background:var(--bg);border:1px solid rgba(230,57,70,.3);border-radius:7px;color:var(--tx);font-family:inherit;font-size:12px;padding:8px 10px;margin-bottom:7px;outline:none;-webkit-appearance:none;appearance:none}
+.inc-w select option{background:var(--bg)}
+.inc-r2{display:flex;gap:8px}.inc-r2 input{flex:1;margin-bottom:0}
+.inc-check-row{display:flex;align-items:center;gap:8px;margin-top:2px;font-size:12px;color:var(--dm)}
+.inc-check-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--rj);flex-shrink:0}
+.res-card{background:var(--cd);border:1px solid var(--br);border-radius:12px;padding:14px;margin-bottom:10px}
+.res-frt{font-size:18px;font-weight:900;color:var(--or);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
+.res-row{display:flex;justify-content:space-between;font-size:12px;color:var(--dm);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.res-row:last-child{border:none}
+.res-row span:last-child{font-weight:700;color:var(--tx)}
+.est{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.est-ok{background:rgba(45,198,83,.18);color:var(--vd)}
+.est-par{background:rgba(255,190,11,.18);color:var(--am)}
+.est-pen{background:rgba(232,93,4,.18);color:var(--or)}
+.exp-box{background:var(--cd);border:1px solid var(--br);border-radius:12px;padding:14px;margin-bottom:10px}
+.exp-tit{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--dm);margin-bottom:12px}
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ebtn{display:flex;flex-direction:column;align-items:center;gap:5px;color:#fff;font-family:inherit;font-size:11px;font-weight:700;padding:14px 8px;border-radius:12px;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;-webkit-appearance:none;min-height:72px;justify-content:center}
+.ebtn:active{opacity:.8;transform:scale(.97)}
+.ei{font-size:20px}
+.e1{background:linear-gradient(135deg,#059669,#10B981)}
+.e2{background:linear-gradient(135deg,var(--ord),var(--or))}
+.e3{background:linear-gradient(135deg,#7C3AED,#9F67FF)}
+.e4{background:linear-gradient(135deg,#0369A1,#0EA5E9)}
+.exp-hint{font-size:10px;color:var(--dm);line-height:1.7}
+#pdf-ov{position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:10000;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none}
+.pdf-toolbar{position:sticky;top:0;background:#fff;padding:10px 14px;display:flex;gap:8px;border-bottom:3px solid #E85D04;z-index:1}
+.pdf-btn-print{flex:1;background:#E85D04;color:#fff;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.pdf-btn-close{background:#F1F5F9;color:#475569;border:none;padding:12px 16px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer}
+.pdf-body{padding:16px;font-family:Arial,sans-serif;font-size:11px;color:#111;max-width:780px;margin:auto}
+@media print{#pdf-ov .pdf-toolbar{display:none!important}.pdf-body{padding:0}}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--cd2);color:var(--tx);font-size:12px;font-weight:700;padding:10px 20px;border-radius:30px;z-index:20000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;border:1px solid var(--br);box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast.show{opacity:1}
+.toast.ok{background:var(--vd);color:#fff;border:none}
+.toast.err{background:var(--rj);color:#fff;border:none}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--br);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;background:none;border:none;color:var(--dm);font-family:inherit;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;gap:3px;transition:color .2s}
+.nav-btn.active{color:var(--or)}
+.nav-ico{font-size:18px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:var(--cd);border-radius:12px;padding:14px;text-align:center;border:1px solid var(--br)}
+.stat-number{font-size:28px;font-weight:900;color:var(--or)}
+.stat-label{font-size:10px;color:var(--dm);margin-top:4px}
+.score-card{background:var(--cd);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--br)}
+.score-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--dm);margin-bottom:10px}
+.score-num{font-size:42px;font-weight:900;line-height:1}
+.score-formula{font-size:10px;color:var(--dm);margin-top:6px;line-height:1.5}
+.chart-bar-item{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.chart-bar-label{width:90px;font-size:11px;font-weight:600}
+.chart-bar-bg{flex:1;height:28px;background:var(--br);border-radius:6px;overflow:hidden}
+.chart-bar-fill{height:100%;background:linear-gradient(90deg,var(--or),var(--or2));border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:10px;font-weight:700;color:#fff}
+.stats-table{width:100%;font-size:11px;border-collapse:collapse}
+.stats-table th,.stats-table td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--br)}
+.stats-table th{color:var(--dm);font-weight:700}
+.cumple-badge{display:inline-block;padding:2px 6px;border-radius:10px;font-size:9px;font-weight:600}
+.cumple-si{background:rgba(45,198,83,.2);color:#4ade80}
+.cumple-no{background:rgba(230,57,70,.2);color:#f87171}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div id="pdf-ov" style="display:none;">
+  <div class="pdf-toolbar">
+    <button class="pdf-btn-print" onclick="window.print()">🖨️ Imprimir / Guardar como PDF</button>
+    <button class="pdf-btn-close" onclick="cerrarPDF()">✕ Cerrar</button>
+  </div>
+  <div class="pdf-body" id="pdf-body"></div>
+</div>
+<header>
+  <div class="h-row">
+    <div><div class="h-tit">PMT v2</div><div class="h-sub">Inspección de Campo · Ciénaga de la Virgen</div></div>
+    <div class="h-bdg">LP-CARDIQUE<br>006-2025</div>
+  </div>
+</header>
+<div class="meta-bar">
+  <div class="meta-row">
+    <div class="meta-field">
+      <div class="meta-lbl">📅 Fecha</div>
+      <input type="date" id="inp-fecha">
+    </div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-field">
+      <div class="meta-lbl">👷 Residente de Obra</div>
+      <input type="text" id="inp-residente" placeholder="Nombre residente" autocomplete="off">
+    </div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-field">
+      <div class="meta-lbl">🔍 Inspector Interventoría</div>
+      <input type="text" id="inp-interventoria" placeholder="Nombre inspector interventoría" autocomplete="off">
+    </div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-field">
+      <div class="meta-lbl">🏛️ Supervisor CARDIQUE</div>
+      <input type="text" id="inp-cardique" placeholder="Nombre supervisor CARDIQUE" autocomplete="off">
+    </div>
+  </div>
+</div>
+<div class="prog">
+  <div class="prog-row"><span class="prog-lbl">Progreso total</span><span class="prog-pct" id="pct-g">0%</span></div>
+  <div class="bar"><div class="bar-f" id="bar-g"></div></div>
+</div>
+<div class="tabs" id="tabs-bar"></div>
+<div class="content" id="content-area"></div>
+<div class="nav-bar" id="nav-bar"></div>
+
+<script>
+// ============================================================
+// DATOS — var D
+// Estructura: { [frente]: { label, em, col, long, coords, secs: [{ id, lbl, its: [{id, t, c?}] }] } }
+// c:1 = crítico (peso doble en score ponderado)
+// ============================================================
+var D = {
+  calicanto: {
+    label: "Calicanto", em: "🔵", col: "#3B82F6",
+    long: "779 m",
+    coords: "10°25'31.61\"N 75°28'48.85\"O → 10°25'24.20\"N 75°28'25.30\"O",
+    secs: [
+      { id: "c-se", lbl: "🚧 Señalización", its: [
+        {id:"c1",  t:"Señal INICIO DE OBRA instalada (100 m antes del frente)", c:1},
+        {id:"c2",  t:"Señal FIN DE OBRA instalada correctamente", c:1},
+        {id:"c3",  t:"Señales VELOCIDAD MÁXIMA 30 km/h en Cll. 47 y Cra. 82", c:1},
+        {id:"c4",  t:"Señales ENTRADA Y SALIDA DE VOLQUETAS verificadas (13 und. en Cra. 82)"},
+        {id:"c5",  t:"Señal ZONA DE ACOPIO visible en Isla de León – Nuevo Mundo"},
+        {id:"c6",  t:"Todas las señales en buen estado: visibles, reflectivas, sin daños"},
+        {id:"c7",  t:"Señalización móvil (conos, cinta de peligro, vallas) bien ubicada"}
+      ]},
+      { id: "c-ac", lbl: "📦 Zona de Acopio", its: [
+        {id:"c8",  t:"Zona de acopio 250 m² activa y delimitada"},
+        {id:"c9",  t:"Zona de acopio 2.5 Ha activa y organizada"},
+        {id:"c10", t:"Acceso libre para maniobra de volquetas"},
+        {id:"c11", t:"Material excavado ordenado y cubierto"},
+        {id:"c12", t:"Permiso del propietario del predio vigente y disponible"}
+      ]},
+      { id: "c-ru", lbl: "🛣️ Rutas de Acceso", its: [
+        {id:"c13", t:"Av. Pedro Romero: acceso sin obstrucciones en la intersección", c:1},
+        {id:"c14", t:"Ruta Acopio → Cll. 47 (≈1.5 km) transitable"},
+        {id:"c15", t:"Giro izq. Cra. 82 habilitado para volquetas"},
+        {id:"c16", t:"Ruta El Pozón → Cra. 92 → Ciudadela de la Paz (≈2.3 km) despejada"},
+        {id:"c17", t:"Vías sin encharcamientos ni hundimientos por lluvia"},
+        {id:"c18", t:"Vías libres de derrame de material por volquetas"}
+      ]},
+      { id: "c-pe", lbl: "👷 Personal y Paleteros", its: [
+        {id:"c19", t:"Paletero presente en cruce Cll. 47 / Cra. 82", c:1},
+        {id:"c20", t:"Conductores respetan velocidad máx. 30 km/h", c:1},
+        {id:"c21", t:"Paletero usa chaleco reflectivo, casco, botas y lentes"},
+        {id:"c22", t:"Paleta PARE/SIGA en buen estado y usada correctamente"},
+        {id:"c23", t:"Reductores de velocidad removibles instalados en sector residencial"}
+      ]},
+      { id: "c-pa", lbl: "🚶 Peatones y Ciclistas", its: [
+        {id:"c24", t:"Andenes (≈1 m) libres de obstrucciones por obra"},
+        {id:"c25", t:"Senderos peatonales provisionales habilitados donde aplique"},
+        {id:"c26", t:"Ciclistas identificados — señalización de precaución visible"},
+        {id:"c27", t:"Accesibilidad garantizada para personas con discapacidad (rampa provisional o guía táctil)", c:1},
+        {id:"c28", t:"Separación física entre zona de trabajo y circulación peatonal (barrera rígida o valla)", c:1}
+      ]},
+      { id: "c-in", lbl: "📊 Indicadores", its: [
+        {id:"c29", t:"Señalización instalada ≥ 90% de lo requerido (meta semanal)", c:1},
+        {id:"c30", t:"Continuidad sendero peatonal = 100% (meta semanal)", c:1},
+        {id:"c31", t:"Registro fotográfico del frente diligenciado hoy"},
+        {id:"c32", t:"Bitácora de control de vehículos actualizada"}
+      ]}
+    ]
+  },
+  chaplundun: {
+    label: "Chaplundún", em: "🟡", col: "#F59E0B",
+    long: "350 m",
+    coords: "10°25'17.12\"N 75°28'48.03\"O → 10°25'9.10\"N 75°28'39.40\"O",
+    secs: [
+      { id: "h-se", lbl: "🚧 Señalización", its: [
+        {id:"h1",  t:"Señal INICIO DE OBRA instalada en Cll. 48", c:1},
+        {id:"h2",  t:"Señal FIN DE OBRA al final del tramo", c:1},
+        {id:"h3",  t:"Señales VELOCIDAD MÁXIMA 30 km/h en corredor Cra. 80 / Cll. 47", c:1},
+        {id:"h4",  t:"Señales ENTRADA Y SALIDA DE VOLQUETAS en Cll. 48 y Cra. 80"},
+        {id:"h5",  t:"Señal ZONA DE ACOPIO visible en sector Chaplundún (1.000 m²)"},
+        {id:"h6",  t:"Señales en buen estado: visibles, reflectivas, sin daños"},
+        {id:"h7",  t:"Señalización móvil (conos, cinta, vallas) en posición correcta"}
+      ]},
+      { id: "h-ac", lbl: "📦 Zona de Acopio (1.000 m²)", its: [
+        {id:"h8",  t:"Zona delimitada con cerramiento (tela verde o cinta)"},
+        {id:"h9",  t:"Acceso habilitado para maquinaria"},
+        {id:"h10", t:"Material ordenado sin riesgo a terceros"},
+        {id:"h11", t:"Permiso del propietario del predio vigente"}
+      ]},
+      { id: "h-ru", lbl: "🛣️ Rutas de Acceso", its: [
+        {id:"h12", t:"Cll. 48 (terreno natural, paralela al arroyo) transitable sin desgaste crítico", c:1},
+        {id:"h13", t:"Tramo ≈650 m hasta Cra. 80 sin encharcamientos ni obstáculos"},
+        {id:"h14", t:"Giro der. Cra. 80 y luego izq. Cll. 47 habilitado para volquetas"},
+        {id:"h15", t:"Vías sin derrame de material por volquetas"},
+        {id:"h16", t:"Integración con ruta Calicanto en Cll. 47 / Cra. 82 operativa"}
+      ]},
+      { id: "h-pe", lbl: "👷 Personal y Paleteros", its: [
+        {id:"h17", t:"Paletero presente en Cra. 80 / Cll. 47", c:1},
+        {id:"h18", t:"Conductores respetan velocidad y señalización temporal", c:1},
+        {id:"h19", t:"Paletero con EPP completo (chaleco, casco, botas, lentes)"},
+        {id:"h20", t:"Paleta PARE/SIGA operativa y usada correctamente"},
+        {id:"h21", t:"Reductores de velocidad en zonas estrechas de Cll. 48"}
+      ]},
+      { id: "h-pa", lbl: "🚶 Peatones y Ciclistas", its: [
+        {id:"h22", t:"Andenes libres de obstrucciones por obra"},
+        {id:"h23", t:"Senderos peatonales provisionales habilitados donde aplique"},
+        {id:"h24", t:"Ciclistas identificados — señalización de precaución visible"},
+        {id:"h25", t:"Accesibilidad garantizada para personas con discapacidad (rampa provisional o guía táctil)", c:1},
+        {id:"h26", t:"Separación física entre zona de trabajo y circulación peatonal (barrera rígida o valla)", c:1}
+      ]},
+      { id: "h-in", lbl: "📊 Indicadores", its: [
+        {id:"h27", t:"Señalización ≥ 90% instalada conforme a norma", c:1},
+        {id:"h28", t:"Continuidad sendero peatonal = 100%", c:1},
+        {id:"h29", t:"Registro fotográfico elaborado hoy"},
+        {id:"h30", t:"Bitácora de movilidad actualizada"}
+      ]}
+    ]
+  },
+  ricaurte: {
+    label: "Ricaurte", em: "🟢", col: "#10B981",
+    long: "831 m",
+    coords: "10°25'22.04\"N 75°29'17.87\"O → 10°24'55.40\"N 75°29'16.80\"O",
+    secs: [
+      { id: "r-se", lbl: "🚧 Señalización", its: [
+        {id:"r1",  t:"Señal INICIO DE OBRA al comienzo del tramo (831 m)", c:1},
+        {id:"r2",  t:"Señal FIN DE OBRA al final del frente", c:1},
+        {id:"r3",  t:"Señales VELOCIDAD MÁXIMA 30 km/h en Cra. 60 → Av. Pedro Romero", c:1},
+        {id:"r4",  t:"Señales ENTRADA Y SALIDA DE VOLQUETAS en Cra. 60 y accesos"},
+        {id:"r5",  t:"Señal ZONA DE ACOPIO visible en sector Ricaurte (1.000 m²)"},
+        {id:"r6",  t:"Señalización en buen estado: visible, reflectiva, sin daños"},
+        {id:"r7",  t:"Señalización móvil correctamente ubicada"}
+      ]},
+      { id: "r-ac", lbl: "📦 Zona de Acopio (1.000 m²)", its: [
+        {id:"r8",  t:"Zona delimitada y señalizada correctamente"},
+        {id:"r9",  t:"Acceso libre para volquetas y maquinaria"},
+        {id:"r10", t:"Material de excavación ordenado sin dispersión"},
+        {id:"r11", t:"Permiso del propietario del predio vigente"}
+      ]},
+      { id: "r-ru", lbl: "🛣️ Rutas de Acceso", its: [
+        {id:"r12", t:"Ruta acopio → Av. Pedro Romero (≈1 km) transitable", c:1},
+        {id:"r13", t:"Cra. 60 / Cll. 36: intersección sin obstáculos para maniobras"},
+        {id:"r14", t:"Vías sin encharcamientos (TPDA 2.485 veh/día)"},
+        {id:"r15", t:"Vías libres de derrame de material"},
+        {id:"r16", t:"Cra. 60 concreto rígido: sin nuevos daños atribuibles a obra"}
+      ]},
+      { id: "r-pe", lbl: "👷 Personal y Paleteros", its: [
+        {id:"r17", t:"Paletero presente en Cra. 60 / Av. Pedro Romero", c:1},
+        {id:"r18", t:"Conductores respetan velocidad 30 km/h", c:1},
+        {id:"r19", t:"Paletero con EPP completo"},
+        {id:"r20", t:"Paleta PARE/SIGA en buen estado"},
+        {id:"r21", t:"Reductores removibles en zonas residenciales (Olaya Herrera, Ricaurte)"}
+      ]},
+      { id: "r-pa", lbl: "🚶 Peatones y Ciclistas", its: [
+        {id:"r22", t:"Andenes libres de obstrucciones por obra"},
+        {id:"r23", t:"Senderos peatonales provisionales habilitados donde aplique"},
+        {id:"r24", t:"Ciclistas identificados — señalización de precaución visible"},
+        {id:"r25", t:"Accesibilidad garantizada para personas con discapacidad (rampa provisional o guía táctil)", c:1},
+        {id:"r26", t:"Separación física entre zona de trabajo y circulación peatonal (barrera rígida o valla)", c:1}
+      ]},
+      { id: "r-in", lbl: "📊 Indicadores", its: [
+        {id:"r27", t:"Señalización ≥ 90% instalada conforme a norma", c:1},
+        {id:"r28", t:"Continuidad sendero peatonal = 100%", c:1},
+        {id:"r29", t:"Registro fotográfico elaborado hoy"},
+        {id:"r30", t:"Bitácora de movilidad actualizada"}
+      ]}
+    ]
+  }
+};
+
+var TIPOS = ["","Accidente de tránsito","Incumplimiento velocidad","Señal dañada / derribada","Derrame de material en vía","Obstáculo en andén","Paletero ausente","Otro"];
+var NC_CATS = [
+  {v:"",    l:"— Sin clasificar —"},
+  {v:"NC-S",l:"NC-S — Señalización incompleta/ausente"},
+  {v:"NC-E",l:"NC-E — EPP/Personal incumplido"},
+  {v:"NC-A",l:"NC-A — Acceso/Rutas obstruidas"},
+  {v:"NC-P",l:"NC-P — Peatones/Ciclistas en riesgo"},
+  {v:"NC-D",l:"NC-D — Documentación faltante"}
+];
+
+var SK = "pmt_cv3_cumple_real";
+var checks = {}, cumple = {}, notas = {calicanto:"",chaplundun:"",ricaurte:""};
+var inc = {
+  calicanto: {tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false},
+  chaplundun:{tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false},
+  ricaurte:  {tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false}
+};
+var openSecs = {"c-se":1,"h-se":1,"r-se":1};
+var activeTab = "calicanto";
+var horaFrente = {calicanto:"",chaplundun:"",ricaurte:""};
+var ncCat = {};
+var inspResidente = "", inspInterventoria = "", inspCardique = "";
+
+function $(id){return document.getElementById(id)}
+
+// ============================================================
+// PERSISTENCIA
+// ============================================================
+function save(){
+  try{
+    localStorage.setItem(SK, JSON.stringify({
+      checks: checks, cumple: cumple, notas: notas, inc: inc,
+      openSecs: openSecs, activeTab: activeTab,
+      fecha: $("inp-fecha").value||"",
+      inspResidente: $("inp-residente").value||"",
+      inspInterventoria: $("inp-interventoria").value||"",
+      inspCardique: $("inp-cardique").value||"",
+      horaFrente: horaFrente,
+      ncCat: ncCat
+    }));
+  }catch(e){}
+}
+
+function load(){
+  try{
+    var s = localStorage.getItem(SK);
+    if(!s) return;
+    var d = JSON.parse(s);
+    if(d.checks) checks = d.checks;
+    if(d.cumple) cumple = d.cumple;
+    if(d.notas) notas = Object.assign({}, notas, d.notas);
+    if(d.inc) {
+      for(var k in d.inc){
+        if(!inc[k]) inc[k]={tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false};
+        inc[k] = Object.assign(inc[k], d.inc[k]);
+      }
+    }
+    if(d.openSecs) openSecs = Object.assign({}, openSecs, d.openSecs);
+    if(d.activeTab) activeTab = d.activeTab;
+    if(d.horaFrente) horaFrente = Object.assign({}, horaFrente, d.horaFrente);
+    if(d.ncCat) ncCat = d.ncCat;
+    setTimeout(function(){
+      if(d.fecha) $("inp-fecha").value = d.fecha;
+      if(d.inspResidente) $("inp-residente").value = d.inspResidente;
+      if(d.inspInterventoria) $("inp-interventoria").value = d.inspInterventoria;
+      if(d.inspCardique) $("inp-cardique").value = d.inspCardique;
+    }, 30);
+  }catch(e){}
+}
+
+// ============================================================
+// CÁLCULOS
+// ============================================================
+function prog(k){
+  var its = D[k].secs.reduce(function(a,s){return a.concat(s.its)},[]);
+  var d = its.filter(function(i){return checks[i.id]}).length;
+  return {t:its.length, d:d, p:its.length ? Math.round(d/its.length*100) : 0};
+}
+
+function gProg(){
+  var its = Object.values(D).reduce(function(a,f){return a.concat(f.secs.reduce(function(b,s){return b.concat(s.its)},[])) },[]);
+  var d = its.filter(function(i){return checks[i.id]}).length;
+  return {t:its.length, d:d, p:its.length ? Math.round(d/its.length*100) : 0};
+}
+
+function gProgCumpleReal(){
+  var its = Object.values(D).reduce(function(a,f){return a.concat(f.secs.reduce(function(b,s){return b.concat(s.its)},[])) },[]);
+  var d = its.filter(function(i){return checks[i.id] && cumple[i.id]===true}).length;
+  return {t:its.length, d:d, p:its.length ? Math.round(d/its.length*100) : 0};
+}
+
+// Score ponderado: críticos valen 2x
+function calcScore(){
+  var its = Object.values(D).reduce(function(a,f){return a.concat(f.secs.reduce(function(b,s){return b.concat(s.its)},[])) },[]);
+  var critT=0, critC=0, normT=0, normC=0;
+  its.forEach(function(it){
+    if(it.c){critT++; if(checks[it.id]&&cumple[it.id]===true)critC++;}
+    else{normT++; if(checks[it.id]&&cumple[it.id]===true)normC++;}
+  });
+  var denom = critT*2 + normT;
+  var num   = critC*2 + normC;
+  return denom ? Math.round(num/denom*100) : 0;
+}
+
+function fmtF(v){
+  if(!v) return "—";
+  var p=v.split("-");
+  if(p.length<3) return v;
+  var meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  return parseInt(p[2])+" de "+meses[parseInt(p[1])-1]+" de "+p[0];
+}
+
+function toast(msg, tipo){
+  var el = $("toast");
+  el.textContent = msg;
+  el.className = "toast show" + (tipo?" "+tipo:"");
+  setTimeout(function(){el.className="toast"}, 2600);
+}
+
+// ============================================================
+// UI — ACTUALIZAR
+// ============================================================
+function upd(){
+  var g = gProg();
+  $("pct-g").textContent = g.p + "%";
+  $("bar-g").style.width = g.p + "%";
+  for(var k in D){
+    var p = prog(k);
+    var tp = $("tab-pct-"+k); if(tp) tp.textContent = p.p + "%";
+    var fp = $("pct-fp-"+k); if(fp){ fp.textContent = p.p + "%"; fp.style.color = D[k].col; }
+    var bfp = $("bar-fp-"+k); if(bfp){ bfp.style.width = p.p + "%"; bfp.style.background = D[k].col; }
+    // contadores por sección
+    for(var si=0;si<D[k].secs.length;si++){
+      var s = D[k].secs[si];
+      var sc = $("cnt-"+s.id);
+      if(sc){
+        var sd = s.its.filter(function(i){return checks[i.id]}).length;
+        sc.textContent = sd + "/" + s.its.length;
+        sc.style.color = (sd===s.its.length)? "var(--vd)" : "";
+      }
+    }
+  }
+  // warn-crit: ítems críticos inspeccionados sin calificar
+  document.querySelectorAll(".item[id^='itm-']").forEach(function(el){
+    var id = el.id.replace("itm-","");
+    // buscar si es crítico
+    var esCrit = false;
+    for(var k in D){ for(var si=0;si<D[k].secs.length;si++){ var found=D[k].secs[si].its.find(function(x){return x.id===id}); if(found&&found.c){esCrit=true;break;} } if(esCrit)break;}
+    if(esCrit && checks[id] && cumple[id]===undefined){
+      el.classList.add("warn-crit");
+    } else {
+      el.classList.remove("warn-crit");
+    }
+  });
+}
+
+// ============================================================
+// CONSTRUCCIÓN DE UI
+// ============================================================
+function buildTabs(){
+  var html = "";
+  for(var k in D){
+    html += '<button class="tab" id="tab-'+k+'" data-tab="'+k+'">'+D[k].em+" "+D[k].label+'<span class="pct" id="tab-pct-'+k+'">0%</span></button>';
+  }
+  html += '<button class="tab" id="tab-resumen" data-tab="resumen">📋 Resumen<span class="pct">—</span></button>';
+  html += '<button class="tab" id="tab-estadisticas" data-tab="estadisticas">📈 Estadísticas<span class="pct">📊</span></button>';
+  $("tabs-bar").innerHTML = html;
+  document.querySelectorAll("#tabs-bar .tab").forEach(function(btn){
+    btn.addEventListener("click", function(){switchTab(this.dataset.tab);});
+  });
+}
+
+function buildNav(){
+  var html = "";
+  for(var k in D){
+    html += '<button class="nav-btn" id="nav-'+k+'" data-tab="'+k+'"><span class="nav-ico">'+D[k].em+"</span>"+D[k].label+"</button>";
+  }
+  html += '<button class="nav-btn" id="nav-resumen" data-tab="resumen"><span class="nav-ico">📋</span>Resumen</button>';
+  html += '<button class="nav-btn" id="nav-estadisticas" data-tab="estadisticas"><span class="nav-ico">📈</span>Estadísticas</button>';
+  $("nav-bar").innerHTML = html;
+  document.querySelectorAll("#nav-bar .nav-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){switchTab(this.dataset.tab);});
+  });
+}
+
+// Mejora #13: función buildFrenteHTML(k) — elimina duplicación
+function buildFrenteHTML(k){
+  var f = D[k];
+  var h = '<div class="panel" id="panel-'+k+'">';
+  // Card info frente
+  h += '<div class="fc"><div class="fc-top"><span class="fc-name">'+f.em+" "+f.label+" · "+f.long+'</span><span class="fc-pct" id="pct-fp-'+k+'" style="color:'+f.col+'">0%</span></div>';
+  h += '<div class="bar"><div class="bar-f" id="bar-fp-'+k+'" style="background:'+f.col+';width:0%"></div></div>';
+  h += '<div class="fc-coords">'+f.coords+'</div>';
+  // Hora de inspección + botón limpiar frente
+  h += '<div class="frente-actions" style="margin-top:10px">';
+  h += '<div class="hora-frente-wrap"><span class="hora-frente-lbl">⏰ Hora insp.:</span><input type="time" class="hora-frente-input" id="hora-frente-'+k+'" value="'+(horaFrente[k]||"")+'"></div>';
+  h += '<button class="limpiar-frente-btn" onclick="limpiarFrente(\''+k+'\')">🗑 Limpiar frente</button>';
+  h += '</div></div>';
+
+  // Secciones
+  for(var si=0;si<f.secs.length;si++){
+    var s = f.secs[si];
+    var op = openSecs[s.id] ? "open" : "";
+    // Bug #3 fix: usar spread para tomar el primer carácter Unicode completo
+    var ico = [...s.lbl][0];
+    var lbl = s.lbl.slice(ico.length).trim();
+    // Si el emoji tiene variante selector (U+FE0F), el spread puede dar 2 chars
+    if(lbl.charAt(0) === '️') lbl = lbl.slice(1).trim();
+
+    h += '<div class="sec '+op+'" id="sec-'+s.id+'">';
+    h += '<div class="sec-h" onclick="togSec(\''+s.id+'\')"><div class="sec-lbl"><div class="sec-ico" style="background:'+f.col+'22">'+ico+'</div><span>'+lbl+'</span></div>';
+    h += '<div style="display:flex;align-items:center;gap:6px"><span class="sec-cnt" id="cnt-'+s.id+'">0/'+s.its.length+'</span><span class="chv">▼</span></div></div>';
+    h += '<div class="sec-b">';
+
+    for(var ii=0;ii<s.its.length;ii++){
+      var it = s.its[ii];
+      var completado = checks[it.id] || false;
+      var dn = completado ? "done" : "";
+      var chkContent = completado ? "✓" : "";
+      var showCumple = completado ? "flex" : "none";
+      var valCumple = cumple[it.id];
+      var claseSi = (valCumple===true) ? "activo-si" : "";
+      var claseNo = (valCumple===false) ? "activo-no" : "";
+      // warn-crit inicial
+      var warnClass = (it.c && completado && valCumple===undefined) ? " warn-crit" : "";
+      var catVal = ncCat[it.id] || "";
+
+      h += '<div class="item '+dn+warnClass+'" id="itm-'+it.id+'" onclick="togCheck(\''+it.id+'\')">';
+      h += '<div class="chk" id="chk-'+it.id+'">'+chkContent+'</div>';
+      h += '<span class="item-t">'+it.t+'</span>';
+      h += (it.c ? '<span class="crit">Crítico</span>' : '');
+      h += '<div class="item-actions" onclick="event.stopPropagation()">';
+      h += '<button class="edit-btn" onclick="editarItem(\''+s.id+'\','+ii+')">✏️</button>';
+      h += '<button class="delete-btn" onclick="eliminarItem(\''+s.id+'\','+ii+')">🗑️</button>';
+      h += '</div></div>';
+
+      // Fila CUMPLE/NO CUMPLE
+      h += '<div class="cumple-row" id="cumple-row-'+it.id+'" style="display:'+showCumple+'">';
+      h += '<div class="btn-cumple '+claseSi+'" id="cumple-si-'+it.id+'" onclick="event.stopPropagation();setCumple(\''+it.id+'\',true)"><span>✅</span> CUMPLE</div>';
+      h += '<div class="btn-cumple '+claseNo+'" id="cumple-no-'+it.id+'" onclick="event.stopPropagation();setCumple(\''+it.id+'\',false)"><span>❌</span> NO CUMPLE</div>';
+      h += '</div>';
+
+      // Categoría NC — solo visible si NO CUMPLE
+      var showNc = (completado && valCumple===false) ? "block" : "none";
+      h += '<div class="nc-cat-wrap" id="nc-wrap-'+it.id+'" style="display:'+showNc+'">';
+      h += '<select class="nc-cat-sel" id="nc-cat-'+it.id+'" onchange="event.stopPropagation();setNcCat(\''+it.id+'\',this.value)">';
+      for(var ni=0;ni<NC_CATS.length;ni++){
+        h += '<option value="'+NC_CATS[ni].v+'"'+(catVal===NC_CATS[ni].v?" selected":"")+'>'+NC_CATS[ni].l+'</option>';
+      }
+      h += '</select></div>';
+    }
+
+    h += '<button class="add-item-btn" onclick="agregarItem(\''+s.id+'\')">➕ Agregar nuevo ítem</button>';
+    h += '</div></div>';
+  }
+
+  // Observaciones
+  h += '<div class="nota-w"><div class="nota-lbl">📝 Observaciones — '+f.label+'</div>';
+  h += '<textarea id="nota-'+k+'" placeholder="Anota novedades...">'+(notas[k]||"")+'</textarea></div>';
+
+  // Incidente vial mejorado
+  h += '<div class="inc-w"><div class="inc-tit">🚨 Registro de Incidente Vial</div>';
+  h += '<select id="inc-t-'+k+'">'+TIPOS.map(function(t){return'<option value="'+t+'"'+(inc[k]&&inc[k].tipo===t?" selected":"")+">"+(t||"— Tipo —")+"</option>"}).join("")+'</select>';
+  h += '<input type="text" id="inc-d-'+k+'" placeholder="Descripción" value="'+((inc[k]&&inc[k].desc)||"")+'">';
+  h += '<select id="inc-g-'+k+'">';
+  h += '<option value=""'+((!inc[k]||!inc[k].gravedad)?" selected":"")+'>— Gravedad —</option>';
+  h += '<option value="Leve"'+((inc[k]&&inc[k].gravedad==="Leve")?" selected":"")+'>Leve</option>';
+  h += '<option value="Moderado"'+((inc[k]&&inc[k].gravedad==="Moderado")?" selected":"")+'>Moderado</option>';
+  h += '<option value="Grave"'+((inc[k]&&inc[k].gravedad==="Grave")?" selected":"")+'>Grave ⚠️</option>';
+  h += '</select>';
+  h += '<div class="inc-r2">';
+  h += '<input type="time" id="inc-h-'+k+'" value="'+((inc[k]&&inc[k].hora)||"")+'">';
+  h += '<input type="text" id="inc-a-'+k+'" placeholder="Acción tomada" value="'+((inc[k]&&inc[k].acc)||"")+'"></div>';
+  h += '<label class="inc-check-row"><input type="checkbox" id="inc-rp-'+k+'"'+((inc[k]&&inc[k].reportado)?" checked":"")+'>¿Se reportó a autoridades?</label>';
+  h += '</div></div>';
+  return h;
+}
+
+function buildContent(){
+  var h = "";
+  for(var k in D){ h += buildFrenteHTML(k); }
+  h += '<div class="panel" id="panel-resumen"><div id="res-inner"></div></div>';
+  h += '<div class="panel" id="panel-estadisticas"><div id="stats-inner"></div></div>';
+  $("content-area").innerHTML = h;
+
+  // Eventos
+  for(var k in D){
+    (function(k){
+      var ta=document.getElementById("nota-"+k);
+      if(ta) ta.addEventListener("input",function(e){notas[k]=e.target.value;save();});
+      var sel=document.getElementById("inc-t-"+k);
+      if(sel) sel.addEventListener("change",function(e){if(!inc[k])inc[k]={};inc[k].tipo=e.target.value;save();});
+      var desc=document.getElementById("inc-d-"+k);
+      if(desc) desc.addEventListener("input",function(e){if(!inc[k])inc[k]={};inc[k].desc=e.target.value;save();});
+      var hora=document.getElementById("inc-h-"+k);
+      if(hora) hora.addEventListener("change",function(e){if(!inc[k])inc[k]={};inc[k].hora=e.target.value;save();});
+      var acc=document.getElementById("inc-a-"+k);
+      if(acc) acc.addEventListener("input",function(e){if(!inc[k])inc[k]={};inc[k].acc=e.target.value;save();});
+      var grav=document.getElementById("inc-g-"+k);
+      if(grav) grav.addEventListener("change",function(e){if(!inc[k])inc[k]={};inc[k].gravedad=e.target.value;save();});
+      var rep=document.getElementById("inc-rp-"+k);
+      if(rep) rep.addEventListener("change",function(e){if(!inc[k])inc[k]={};inc[k].reportado=e.target.checked;save();});
+      var hfr=document.getElementById("hora-frente-"+k);
+      if(hfr) hfr.addEventListener("change",function(e){horaFrente[k]=e.target.value;save();});
+    })(k);
+  }
+}
+
+// ============================================================
+// ACCIONES
+// ============================================================
+function switchTab(k, sv){
+  if(sv===undefined) sv=true;
+  activeTab = k;
+  document.querySelectorAll(".panel").forEach(function(el){el.classList.remove("active")});
+  document.querySelectorAll(".tab").forEach(function(el){el.classList.remove("active")});
+  document.querySelectorAll(".nav-btn").forEach(function(el){el.classList.remove("active")});
+  var panel = document.getElementById("panel-"+k); if(panel) panel.classList.add("active");
+  var tab = document.getElementById("tab-"+k); if(tab) tab.classList.add("active");
+  var nav = document.getElementById("nav-"+k); if(nav) nav.classList.add("active");
+  if(k==="resumen") renderRes();
+  if(k==="estadisticas") renderStats();
+  if(sv) save();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+// Bug #1 fix: togCheck actualiza DOM directamente + muestra/oculta nc-wrap
+function togCheck(id){
+  checks[id] = !checks[id];
+  var itm = document.getElementById("itm-"+id);
+  var chk = document.getElementById("chk-"+id);
+  var row = document.getElementById("cumple-row-"+id);
+  var ncw = document.getElementById("nc-wrap-"+id);
+
+  if(checks[id]){
+    if(itm){ itm.classList.add("done"); }
+    if(chk){ chk.textContent = "✓"; }
+    if(row){ row.style.display = "flex"; }
+  } else {
+    cumple[id] = undefined;
+    delete ncCat[id];
+    if(itm){ itm.classList.remove("done"); itm.classList.remove("warn-crit"); }
+    if(chk){ chk.textContent = ""; }
+    if(row){ row.style.display = "none"; }
+    if(ncw){ ncw.style.display = "none"; }
+    // Limpiar botones cumple
+    var bs = document.getElementById("cumple-si-"+id);
+    var bn = document.getElementById("cumple-no-"+id);
+    if(bs) bs.classList.remove("activo-si");
+    if(bn) bn.classList.remove("activo-no");
+  }
+  upd();
+  save();
+}
+
+function togSec(id){
+  openSecs[id] = !openSecs[id];
+  var s = document.getElementById("sec-"+id);
+  if(s){ if(openSecs[id]) s.classList.add("open"); else s.classList.remove("open"); }
+  save();
+}
+
+function setCumple(id, valor){
+  if(!checks[id]) return;
+  cumple[id] = valor;
+  var btnSi = document.getElementById("cumple-si-"+id);
+  var btnNo = document.getElementById("cumple-no-"+id);
+  var ncw   = document.getElementById("nc-wrap-"+id);
+  var itm   = document.getElementById("itm-"+id);
+  if(btnSi && btnNo){
+    if(valor===true){
+      btnSi.classList.add("activo-si"); btnNo.classList.remove("activo-no");
+      if(ncw) ncw.style.display = "none";
+    } else if(valor===false){
+      btnNo.classList.add("activo-no"); btnSi.classList.remove("activo-si");
+      if(ncw) ncw.style.display = "block";
+    }
+  }
+  // quitar warn-crit si ya calificó
+  if(itm) itm.classList.remove("warn-crit");
+  save();
+  upd();
+  if(activeTab==="estadisticas") renderStats();
+}
+
+function setNcCat(id, valor){
+  ncCat[id] = valor;
+  save();
+}
+
+// Mejora #7: limpiar un frente
+function limpiarFrente(k){
+  if(!confirm("¿Limpiar TODOS los datos del frente "+D[k].label+"?\nEsto eliminará checks, calificaciones, notas e incidente de este frente. No afecta los demás frentes.")) return;
+  // Borrar checks y cumple de ítems de este frente
+  for(var si=0;si<D[k].secs.length;si++){
+    var its = D[k].secs[si].its;
+    for(var ii=0;ii<its.length;ii++){
+      delete checks[its[ii].id];
+      delete cumple[its[ii].id];
+      delete ncCat[its[ii].id];
+    }
+  }
+  notas[k] = "";
+  horaFrente[k] = "";
+  inc[k] = {tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false};
+  save();
+  buildContent();
+  switchTab(activeTab, false);
+  upd();
+  toast("✓ Frente "+D[k].label+" limpiado","ok");
+}
+
+function resetConf(){
+  if(!confirm("¿Reiniciar TODA la inspección?")) return;
+  checks={}; cumple={}; ncCat={};
+  notas={calicanto:"",chaplundun:"",ricaurte:""};
+  horaFrente={calicanto:"",chaplundun:"",ricaurte:""};
+  inc={calicanto:{tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false},chaplundun:{tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false},ricaurte:{tipo:"",desc:"",hora:"",acc:"",gravedad:"",reportado:false}};
+  try{localStorage.removeItem(SK)}catch(e){}
+  buildContent();
+  upd();
+  toast("✓ Inspección reiniciada","ok");
+}
+
+function editarItem(secId, idx){
+  var item = null;
+  for(var k in D){ for(var si=0;si<D[k].secs.length;si++){ if(D[k].secs[si].id===secId){ item=D[k].secs[si].its[idx]; break; } } if(item)break; }
+  if(item){
+    var nuevoTexto = prompt("Editar ítem:", item.t);
+    if(nuevoTexto && nuevoTexto.trim()!==""){
+      item.t = nuevoTexto.trim();
+      save(); buildContent(); switchTab(activeTab,false); upd();
+      toast("✓ Ítem editado","ok");
+    }
+  }
+}
+
+function eliminarItem(secId, idx){
+  if(confirm("¿Eliminar este ítem permanentemente?")){
+    for(var k in D){ for(var si=0;si<D[k].secs.length;si++){ if(D[k].secs[si].id===secId){
+      var idEl = D[k].secs[si].its[idx].id;
+      D[k].secs[si].its.splice(idx,1);
+      delete checks[idEl]; delete cumple[idEl]; delete ncCat[idEl];
+      save(); buildContent(); switchTab(activeTab,false); upd();
+      toast("✓ Ítem eliminado","ok"); return;
+    }}}
+  }
+}
+
+function agregarItem(secId){
+  var nuevoTexto = prompt("Nuevo ítem:", "Descripción del ítem");
+  if(nuevoTexto && nuevoTexto.trim()!==""){
+    var esCrit = confirm("¿Marcar como CRÍTICO?");
+    var nuevoId = secId+"_n_"+Date.now()+"_"+Math.random().toString(36).substr(2,4);
+    for(var k in D){ for(var si=0;si<D[k].secs.length;si++){ if(D[k].secs[si].id===secId){
+      D[k].secs[si].its.push({id:nuevoId, t:nuevoTexto.trim(), c:esCrit?1:0});
+      save(); buildContent(); switchTab(activeTab,false); upd();
+      toast("✓ Ítem agregado","ok"); return;
+    }}}
+  }
+}
+
+// ============================================================
+// VALIDACIÓN ANTES DE EXPORTAR (mejora #15)
+// ============================================================
+function validarAntesDe(accion){
+  var ins = ($("inp-residente").value||"").trim() || ($("inp-interventoria").value||"").trim() || ($("inp-cardique").value||"").trim();
+  if(!ins){
+    alert("⚠️ No hay nombre de inspector registrado. Por favor ingresa al menos un inspector antes de exportar.");
+    return false;
+  }
+  // Contar inspeccionados sin calificar
+  var sinCalif = 0;
+  var critiNoCumple = [];
+  var its = Object.values(D).reduce(function(a,f){return a.concat(f.secs.reduce(function(b,s){return b.concat(s.its)},[])) },[]);
+  its.forEach(function(it){
+    if(checks[it.id] && cumple[it.id]===undefined) sinCalif++;
+    if(it.c && checks[it.id] && cumple[it.id]===false) critiNoCumple.push(it.t);
+  });
+  if(sinCalif>0){
+    alert("⚠️ Hay "+sinCalif+" ítem(s) inspeccionado(s) sin calificar (CUMPLE / NO CUMPLE). Revisa antes de "+accion+".");
+    return false;
+  }
+  if(critiNoCumple.length>0){
+    var lista = critiNoCumple.slice(0,5).map(function(t){return"• "+t}).join("\n");
+    if(critiNoCumple.length>5) lista += "\n... y "+(critiNoCumple.length-5)+" más";
+    return confirm("⛔ Hay "+critiNoCumple.length+" ítem(s) CRÍTICO(S) con NO CUMPLE:\n\n"+lista+"\n\n¿Deseas continuar con "+accion+" de todas formas?");
+  }
+  return true;
+}
+
+// ============================================================
+// RENDER RESUMEN
+// ============================================================
+function renderRes(){
+  var g = gProg();
+  var fch = $("inp-fecha").value||"";
+  var res = ($("inp-residente").value||"—");
+  var intv= ($("inp-interventoria").value||"—");
+  var card= ($("inp-cardique").value||"—");
+  var h = '<div class="res-card" style="border-color:rgba(232,93,4,.4)">';
+  h += '<div style="font-size:10px;color:var(--dm);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">LP-CARDIQUE-006-2025 · Ciénaga de la Virgen</div>';
+  h += '<div class="res-row"><span>Fecha</span><span>'+fmtF(fch)+'</span></div>';
+  h += '<div class="res-row"><span>Residente</span><span>'+res+'</span></div>';
+  h += '<div class="res-row"><span>Interventoría</span><span>'+intv+'</span></div>';
+  h += '<div class="res-row"><span>Supervisor</span><span>'+card+'</span></div>';
+  h += '<div class="res-row" style="border:none"><span>Avance global</span><span style="font-size:18px;font-weight:900;color:var(--or)">'+g.p+"% — "+g.d+"/"+g.t+'</span></div>';
+  h += '<div class="bar" style="margin-top:8px"><div class="bar-f" style="width:'+g.p+'%"></div></div></div>';
+  for(var k in D){
+    var f=D[k]; var p=prog(k);
+    var es=p.p===100?{l:"CONFORME ✓",cl:"est-ok"}:p.p>=60?{l:"PARCIAL ⚠",cl:"est-par"}:{l:"PENDIENTE ✗",cl:"est-pen"};
+    var pds=[];
+    for(var si=0;si<f.secs.length;si++){var its=f.secs[si].its;for(var ii=0;ii<its.length;ii++){if(!checks[its[ii].id])pds.push(its[ii]);}}
+    h+='<div class="res-card"><div class="res-frt">'+f.em+" "+f.label+' <span style="font-size:12px;font-weight:400;color:var(--dm)">('+f.long+')</span></div>';
+    if(horaFrente[k]) h+='<div class="res-row"><span>Hora inspección</span><span>'+horaFrente[k]+'</span></div>';
+    h+='<div class="res-row"><span>Avance</span><span style="color:'+f.col+'">'+p.p+"% — "+p.d+"/"+p.t+'</span></div>';
+    h+='<div class="res-row" style="border:none"><span>Estado</span><span class="est '+es.cl+'">'+es.l+'</span></div>';
+    if(pds.length&&pds.length<=7) h+='<div style="margin-top:8px;font-size:11px;color:var(--dm)"><div style="font-size:10px;color:var(--rj);font-weight:700;text-transform:uppercase;margin-bottom:4px">Pendientes ('+pds.length+'):</div>'+pds.map(function(i){return"<div style='padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)'>• "+i.t+"</div>"}).join("")+"</div>";
+    else if(pds.length>7) h+='<div style="margin-top:6px;font-size:11px;color:var(--rj)">⚠ '+pds.length+" ítems pendientes</div>";
+    if(notas[k]&&notas[k].trim()) h+='<div style="margin-top:8px;font-size:11px;color:var(--dm);background:rgba(255,255,255,.03);border-radius:6px;padding:6px 8px">📝 '+notas[k].slice(0,120)+(notas[k].length>120?"…":"")+"</div>";
+    h+='</div>';
+  }
+  h+='<div class="exp-box"><div class="exp-tit">📤 Exportar y Compartir</div><div class="exp-grid"><button class="ebtn e1" onclick="verReporte()"><span class="ei">📋</span>Ver Informe</button><button class="ebtn e2" onclick="abrirPDF()"><span class="ei">🖨️</span>Guardar PDF</button><button class="ebtn e3" onclick="compartirTexto()"><span class="ei">💬</span>WhatsApp</button><button class="ebtn e4" onclick="compartirArchivo()"><span class="ei">📲</span>Enviar checklist</button></div><div class="exp-hint">📋 <b>Ver Informe</b> → resumen completo para copiar<br>🖨️ <b>PDF</b> → vista imprimible<br>💬 <b>WhatsApp</b> → compartir por cualquier app<br>📲 <b>Enviar checklist</b> → compartir archivo</div></div>';
+  h+='<button style="width:100%;background:rgba(255,255,255,.06);color:var(--dm);font-family:inherit;font-size:12px;font-weight:600;padding:10px;border-radius:10px;border:1px solid var(--br);cursor:pointer;margin-top:4px" onclick="resetConf()">🔄 Reiniciar inspección</button>';
+  $("res-inner").innerHTML = h;
+}
+
+// ============================================================
+// RENDER ESTADÍSTICAS (mejora #12 score ponderado)
+// ============================================================
+function renderStats(){
+  var g = gProgCumpleReal();
+  var totalItems=g.t, cumplidosReales=g.d, pendientesReales=totalItems-cumplidosReales;
+  var cumplenSi=0, cumplenNo=0;
+  var totalNormales=0, totalCriticos=0;
+  for(var k in D){for(var si=0;si<D[k].secs.length;si++){var its=D[k].secs[si].its;for(var ii=0;ii<its.length;ii++){var it=its[ii];if(checks[it.id]&&cumple[it.id]===true)cumplenSi++;if(checks[it.id]&&cumple[it.id]===false)cumplenNo++;if(it.c)totalCriticos++;else totalNormales++;}}}
+
+  var score = calcScore();
+  var scoreCol = score>=90?"var(--vd)":score>=70?"var(--am)":"var(--rj)";
+
+  var html = '<div class="stats-grid">';
+  html += '<div class="stat-card"><div class="stat-number">'+totalItems+'</div><div class="stat-label">Total Ítems</div></div>';
+  html += '<div class="stat-card"><div class="stat-number">'+cumplidosReales+'</div><div class="stat-label">CUMPLEN ✅</div></div>';
+  html += '<div class="stat-card"><div class="stat-number">'+cumplenNo+'</div><div class="stat-label">NO CUMPLEN ❌</div></div>';
+  html += '<div class="stat-card"><div class="stat-number">'+g.p+'%</div><div class="stat-label">Cumplimiento Real</div></div>';
+  html += '</div>';
+
+  // Score ponderado
+  html += '<div class="score-card">';
+  html += '<div class="score-title">⭐ Score de Conformidad Ponderado</div>';
+  html += '<div class="score-num" style="color:'+scoreCol+'">'+score+'%</div>';
+  html += '<div class="score-formula">Fórmula: (CUMPLEN_CRÍTICOS×2 + CUMPLEN_NORMALES) / (CRÍTICOS×2 + NORMALES) × 100<br>Críticos detectados: '+totalCriticos+' | Normales: '+totalNormales+'</div>';
+  html += '</div>';
+
+  html += '<div class="fc"><div class="fc-top"><span class="fc-name">📊 CUMPLIMIENTO POR FRENTE</span></div>';
+  for(var k in D){
+    var f=D[k], p=prog(k);
+    var cumpF=0,ncF=0;
+    for(var si=0;si<f.secs.length;si++){var its=f.secs[si].its;for(var ii=0;ii<its.length;ii++){var it=its[ii];if(checks[it.id]&&cumple[it.id]===true)cumpF++;if(checks[it.id]&&cumple[it.id]===false)ncF++;}}
+    html+='<div class="chart-bar-item"><div class="chart-bar-label" style="color:'+f.col+'">'+f.em+" "+f.label+'</div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:'+(p.t?p.d/p.t*100:0)+'%;background:'+f.col+'">'+p.d+'/'+p.t+'</div></div></div>';
+  }
+  // Barra CUMPLE vs NO CUMPLE
+  html+='<div class="chart-bar-item"><div class="chart-bar-label">Cumplen ✅</div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:'+(totalItems?cumplenSi/totalItems*100:0)+'%;background:#2DC653">'+cumplenSi+'</div></div></div>';
+  html+='<div class="chart-bar-item"><div class="chart-bar-label">No Cumplen ❌</div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:'+(totalItems?cumplenNo/totalItems*100:0)+'%;background:#E63946">'+cumplenNo+'</div></div></div>';
+  html+='<div class="chart-bar-item"><div class="chart-bar-label">Normales</div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:'+(totalItems?totalNormales/totalItems*100:0)+'%;background:#2DC653">'+totalNormales+'</div></div></div>';
+  html+='</div>';
+
+  // Tabla detalle
+  html+='<div class="fc"><div class="fc-top"><span class="fc-name">📋 DETALLE POR ÍTEM</span></div><div style="overflow-x:auto"><table class="stats-table"><thead><tr><th>Ítem</th><th>Estado</th><th>Cumple</th></tr></thead><tbody>';
+  for(var k in D){for(var si=0;si<D[k].secs.length;si++){var its=D[k].secs[si].its;for(var ii=0;ii<its.length;ii++){
+    var it=its[ii];
+    var estado=checks[it.id]?"✅ Completado":"⏳ Pendiente";
+    var cumpleText="";
+    if(checks[it.id]&&cumple[it.id]!==undefined){
+      cumpleText=cumple[it.id]?'<span class="cumple-badge cumple-si">CUMPLE</span>':'<span class="cumple-badge cumple-no">NO CUMPLE'+(ncCat[it.id]?" ["+ncCat[it.id]+"]":"")+'</span>';
+    }else if(checks[it.id]){
+      cumpleText='<span class="cumple-badge" style="background:rgba(251,191,36,.2);color:#fbbf24">Sin calificar</span>';
+    }else{
+      cumpleText='—';
+    }
+    html+='<tr><td>'+it.t+(it.c?' <span class="crit">Crítico</span>':'')+'</td><td>'+estado+'</td><td>'+cumpleText+'</td></tr>';
+  }}}
+  html+='</tbody></table></div></div>';
+  $("stats-inner").innerHTML = html;
+}
+
+// ============================================================
+// GENERAR INFORME TEXTO
+// ============================================================
+function genReporte(){
+  var g=gProg(), fch=$("inp-fecha").value||"";
+  var res=$("inp-residente").value||"—";
+  var intv=$("inp-interventoria").value||"—";
+  var card=$("inp-cardique").value||"—";
+  var L=["═══════════════════════════════════════════════════════",
+         "      PLAN DE MANEJO DE TRÁNSITO — INSPECCIÓN DE CAMPO",
+         "         LP-CARDIQUE-006-2025 | Ciénaga de la Virgen",
+         "═══════════════════════════════════════════════════════",
+         "  Fecha            : "+fmtF(fch),
+         "  Residente        : "+res,
+         "  Interventoría    : "+intv,
+         "  Supervisor CARD. : "+card,
+         "  Contratista      : Consorcio CARDIQUE C&E",
+         "  Interventoría    : Consorcio Inter CRD Ciénaga",
+         "  Avance global    : "+g.p+"% ("+g.d+"/"+g.t+" ítems)",
+         "  Generado         : "+new Date().toLocaleString("es-CO"),
+         "═══════════════════════════════════════════════════════\n"];
+  for(var k in D){
+    var f=D[k]; var p=prog(k);
+    L.push("▐ FRENTE: "+f.label.toUpperCase()+" ("+f.long+")");
+    if(horaFrente[k]) L.push("  Hora inspección: "+horaFrente[k]);
+    L.push("  Estado: "+(p.p===100?"CONFORME":p.p>=60?"PARCIAL":"PENDIENTE")+" — "+p.p+"% ("+p.d+"/"+p.t+")");
+    L.push("  ─────────────────────────────────────────────────");
+    for(var si=0;si<f.secs.length;si++){
+      var s=f.secs[si]; L.push("\n  "+s.lbl.toUpperCase());
+      for(var ii=0;ii<s.its.length;ii++){
+        var it=s.its[ii];
+        var estadoCumple="";
+        if(checks[it.id]&&cumple[it.id]!==undefined){
+          estadoCumple=cumple[it.id]?"  ✅ CUMPLE":"  ❌ NO CUMPLE"+(ncCat[it.id]?" ["+ncCat[it.id]+"]":"");
+        }else if(checks[it.id]){estadoCumple="  ⏳ SIN CALIFICAR";}
+        L.push("    "+(checks[it.id]?"✓":"☐")+"  "+it.t+(it.c?"  [⛔ CRÍTICO]":"")+estadoCumple);
+      }
+    }
+    var n=notas[k]; if(n&&n.trim()){L.push("\n  OBSERVACIONES:");n.split("\n").forEach(function(l){L.push("    "+l)});}
+    var iv=inc[k]; if(iv&&(iv.tipo||iv.desc)){
+      L.push("\n  INCIDENTE VIAL:");
+      if(iv.tipo) L.push("    Tipo: "+iv.tipo);
+      if(iv.gravedad) L.push("    Gravedad: "+iv.gravedad);
+      if(iv.desc) L.push("    Descripción: "+iv.desc);
+      if(iv.hora) L.push("    Hora: "+iv.hora);
+      if(iv.acc) L.push("    Acción: "+iv.acc);
+      if(iv.reportado) L.push("    ✅ Reportado a autoridades");
+    }
+    L.push("\n═══════════════════════════════════════════════════════\n");
+  }
+  L.push("RESUMEN:");
+  for(var k in D){var p=prog(k);L.push("  "+D[k].em+" "+D[k].label+": "+p.p+"% — "+(p.p===100?"CONFORME ✓":p.p>=60?"PARCIAL ⚠":"PENDIENTE ✗"));}
+  var sc=calcScore();
+  L.push("  GLOBAL: "+g.p+"% — "+g.d+"/"+g.t+" ítems | Score Ponderado: "+sc+"%");
+  L.push("─────────────────────────────────────────────────────\nPMT v02 · INVIAS 2024");
+  return L.join("\n");
+}
+
+function verReporte(){
+  var txt=genReporte();
+  var ov=document.createElement("div");
+  ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg2);z-index:10000;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:80px";
+  var bar=document.createElement("div");
+  bar.style.cssText="position:sticky;top:-16px;background:var(--bg2);padding:12px 0 12px;margin:-16px -16px 16px;border-bottom:2px solid var(--or);display:flex;gap:8px;align-items:center;z-index:1";
+  bar.innerHTML='<span style="flex:1;font-size:14px;font-weight:900;color:var(--tx);text-transform:uppercase;letter-spacing:.5px;padding-left:4px">Informe PMT v2</span>';
+  var btnCopy=document.createElement("button");
+  btnCopy.style.cssText="background:var(--vd);color:#fff;border:none;padding:10px 14px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap";
+  btnCopy.textContent="📋 Copiar";
+  btnCopy.onclick=function(){copiarTexto(txt);};
+  var btnShare=document.createElement("button");
+  btnShare.style.cssText="background:var(--or);color:#fff;border:none;padding:10px 14px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap";
+  btnShare.textContent="💬 Compartir";
+  btnShare.onclick=function(){compartirTextoDirecto(txt);};
+  var btnClose=document.createElement("button");
+  btnClose.style.cssText="background:var(--cd2);color:var(--dm);border:1px solid var(--br);padding:10px 14px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap";
+  btnClose.textContent="✕";
+  btnClose.onclick=function(){document.body.removeChild(ov);};
+  bar.appendChild(btnCopy);bar.appendChild(btnShare);bar.appendChild(btnClose);
+  var pre=document.createElement("pre");
+  pre.style.cssText="white-space:pre-wrap;font-family:monospace;font-size:11px;color:var(--tx);line-height:1.6;background:var(--cd);padding:14px;border-radius:10px;border:1px solid var(--br)";
+  pre.textContent=txt;
+  ov.appendChild(bar);ov.appendChild(pre);
+  document.body.appendChild(ov);
+}
+
+// ============================================================
+// WHATSAPP MEJORADO (mejora #10)
+// ============================================================
+function compartirTexto(){
+  if(!validarAntesDe("compartir")) return;
+  var g=gProg();
+  var fch=$("inp-fecha").value||"";
+  var res=($("inp-residente").value||"—").trim();
+  var intv=($("inp-interventoria").value||"—").trim();
+  var now=new Date().toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
+  var cumplenSi=0, cumplenNo=0, sinCalif=0;
+  var its=Object.values(D).reduce(function(a,f){return a.concat(f.secs.reduce(function(b,s){return b.concat(s.its)},[])) },[]);
+  its.forEach(function(it){
+    if(checks[it.id]&&cumple[it.id]===true)cumplenSi++;
+    else if(checks[it.id]&&cumple[it.id]===false)cumplenNo++;
+    else if(checks[it.id])sinCalif++;
+  });
+  // críticos NO CUMPLE
+  var criticosNoCumple=[];
+  its.forEach(function(it){if(it.c&&checks[it.id]&&cumple[it.id]===false)criticosNoCumple.push("⛔ "+it.t+(ncCat[it.id]?" ["+ncCat[it.id]+"]":""));});
+  // incidentes
+  var numInc=0;
+  for(var k in D){if(inc[k]&&(inc[k].tipo||inc[k].desc))numInc++;}
+
+  var L=[
+    "🚧 PMT | LP-CARDIQUE-006-2025",
+    "📅 Fecha: "+fmtF(fch)+" | ⏰ "+now,
+    "👷 Residente: "+res+" | Inspector: "+intv,
+    "📊 Avance: "+g.p+"% ("+g.d+"/"+g.t+" ítems)",
+    "",
+    "✅ CUMPLEN: "+cumplenSi+" | ❌ NO CUMPLEN: "+cumplenNo+" | ⏳ SIN CALIFICAR: "+sinCalif,
+    ""
+  ];
+  for(var k in D){
+    var p=prog(k); var em={calicanto:"🔵",chaplundun:"🟡",ricaurte:"🟢"};
+    var emoji=p.p===100?"✅":p.p>=60?"⚠️":"❌";
+    L.push(em[k]+" "+D[k].label.toUpperCase()+" ("+p.p+"%): "+emoji+(horaFrente[k]?" ["+horaFrente[k]+"]":""));
+  }
+  if(criticosNoCumple.length>0){
+    L.push("");L.push("⛔ CRÍTICOS NO CONFORMES:");
+    criticosNoCumple.slice(0,8).forEach(function(t){L.push(t);});
+    if(criticosNoCumple.length>8)L.push("... y "+(criticosNoCumple.length-8)+" más");
+  }
+  L.push("");
+  L.push("📋 Incidentes: "+numInc+" reportado(s)");
+  L.push("─────────────────");
+  L.push("PMT v02 · INVIAS 2024");
+  compartirTextoDirecto(L.join("\n"));
+}
+
+function compartirTextoDirecto(txt){
+  if(navigator.share){
+    navigator.share({title:"PMT — Inspección de Campo | Ciénaga de la Virgen", text:txt})
+      .then(function(){toast("✓ Compartido","ok")})
+      .catch(function(e){if(e.name!=="AbortError")copiarTexto(txt);});
+  } else {
+    var url="https://wa.me/?text="+encodeURIComponent(txt.slice(0,2000));
+    window.open(url,"_blank");
+    toast("Abriendo WhatsApp...","ok");
+  }
+}
+
+function copiarTexto(txt){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){toast("✓ Copiado al portapapeles","ok")}).catch(function(){copiarLegacy(txt);});
+  } else { copiarLegacy(txt); }
+}
+
+function copiarLegacy(txt){
+  try{
+    var ta=document.createElement("textarea");
+    ta.value=txt;ta.style.cssText="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0";
+    document.body.appendChild(ta);ta.focus();ta.select();
+    var ok=document.execCommand("copy");
+    document.body.removeChild(ta);
+    toast(ok?"✓ Copiado al portapapeles":"⚠ Selecciona el texto y cópialo",ok?"ok":"err");
+  }catch(e){toast("⚠ Selecciona el texto y cópialo manualmente","err");}
+}
+
+// ============================================================
+// PDF MEJORADO (mejora #11)
+// ============================================================
+function abrirPDF(){
+  if(!validarAntesDe("generar PDF")) return;
+  $("pdf-body").innerHTML = genPrintHTML();
+  $("pdf-ov").style.display = "block";
+  $("pdf-ov").scrollTop = 0;
+}
+
+function cerrarPDF(){$("pdf-ov").style.display="none";}
+
+function genPrintHTML(){
+  var g=gProg(), fch=$("inp-fecha").value||"";
+  var res=($("inp-residente").value||"—");
+  var intv=($("inp-interventoria").value||"—");
+  var card=($("inp-cardique").value||"—");
+  var sc=calcScore();
+  var scCol=sc>=90?"#166534":sc>=70?"#92400e":"#991b1b";
+  var scBg =sc>=90?"#dcfce7":sc>=70?"#fef3c7":"#fee2e2";
+
+  var h='<div style="font-size:15px;font-weight:700;color:#C44B00;border-bottom:3px solid #E85D04;padding-bottom:5px;margin-bottom:10px">🚧 Plan de Manejo de Tránsito v02 — Inspección de Campo</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:12px;padding:10px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:6px;font-size:11px">';
+  h+='<div><b style="color:#9A3412">Fecha:</b> '+fmtF(fch)+'</div>';
+  h+='<div><b style="color:#9A3412">Contrato:</b> LP-CARDIQUE-006-2025</div>';
+  h+='<div><b style="color:#9A3412">Residente:</b> '+res+'</div>';
+  h+='<div><b style="color:#9A3412">Inspector Interv.:</b> '+intv+'</div>';
+  h+='<div><b style="color:#9A3412">Supervisor CARD.:</b> '+card+'</div>';
+  h+='<div><b style="color:#9A3412">Avance global:</b> '+g.p+"% ("+g.d+"/"+g.t+')</div>';
+  h+='<div><b style="color:#9A3412">Score Ponderado:</b> <span style="background:'+scBg+';color:'+scCol+';padding:1px 6px;border-radius:4px;font-weight:700">'+sc+'%</span></div>';
+  h+='</div>';
+
+  for(var k in D){
+    var f=D[k]; var p=prog(k);
+    var es=p.p===100?{l:"CONFORME",bg:"#dcfce7",co:"#166534"}:p.p>=60?{l:"PARCIAL",bg:"#fef3c7",co:"#92400e"}:{l:"PENDIENTE",bg:"#fee2e2",co:"#991b1b"};
+    h+='<div style="border:1px solid #E2E8F0;border-radius:7px;margin-bottom:12px;overflow:hidden;page-break-inside:avoid">';
+    h+='<div style="background:#1E293B;color:#fff;padding:7px 11px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:11px">';
+    h+='<span>'+f.em+" "+f.label.toUpperCase()+" — "+f.long+(horaFrente[k]?" | ⏰ "+horaFrente[k]:"")+'</span>';
+    h+='<span style="padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;background:'+es.bg+";color:"+es.co+'">'+es.l+" "+p.p+'%</span></div>';
+    h+='<div style="padding:3px 11px;background:#F8FAFC;font-size:9px;color:#64748B;border-bottom:1px solid #E2E8F0">'+f.coords+'</div>';
+    for(var si=0;si<f.secs.length;si++){
+      var s=f.secs[si];
+      h+='<div style="padding:4px 11px;background:#F1F5F9;font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid #E2E8F0">'+s.lbl+'</div>';
+      for(var ii=0;ii<s.its.length;ii++){
+        var it=s.its[ii]; var ok=checks[it.id];
+        var estadoExtra="";
+        if(ok&&cumple[it.id]!==undefined){
+          estadoExtra=cumple[it.id]?" ✅ CUMPLE":" ❌ NO CUMPLE"+(ncCat[it.id]?" ["+ncCat[it.id]+"]":"");
+        } else if(ok){ estadoExtra=" ⏳ SIN CALIFICAR"; }
+        h+='<div style="display:flex;align-items:flex-start;gap:7px;padding:5px 11px;border-bottom:1px solid #F8FAFC;font-size:10px;'+(ok?'background:#F0FDF4':'')+'"><span style="width:16px;height:16px;border:1.5px solid '+(ok?'#166534':'#94A3B8')+';border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#166634;flex-shrink:0;margin-top:1px;background:'+(ok?'#DCFCE7':'#fff')+'">'+(ok?'✓':'')+'</span><span style="flex:1;line-height:1.35;'+(ok?'color:#6B7280;text-decoration:line-through':'')+'">'+it.t+estadoExtra+'</span>'+(it.c?'<span style="background:#FEE2E2;color:#991B1B;font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px;white-space:nowrap">⛔ CRÍTICO</span>':'')+'</div>';
+      }
+    }
+    var n=notas[k]; if(n&&n.trim()) h+='<div style="padding:4px 11px;background:#F1F5F9;font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.4px;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0">📝 Observaciones</div><div style="padding:7px 11px;background:#FFFBEB;font-size:10px;line-height:1.5">'+n.replace(/\n/g,"<br>")+'</div>';
+    var iv=inc[k]; if(iv&&(iv.tipo||iv.desc)){
+      var graveBg = (iv.gravedad==="Grave")?"background:#FEE2E2":"background:#FFFBEB";
+      h+='<div style="padding:4px 11px;background:#F1F5F9;font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.4px;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0">🚨 Incidente Vial'+(iv.gravedad==="Grave"?' <span style="background:#FEE2E2;color:#991B1B;padding:1px 4px;border-radius:3px">GRAVE</span>':'')+'</div>';
+      h+='<div style="padding:7px 11px;font-size:10px;line-height:1.5;'+graveBg+'">';
+      h+='<b>Tipo:</b> '+(iv.tipo||'—')+" &nbsp;<b>Gravedad:</b> "+(iv.gravedad||'—')+" &nbsp;<b>Hora:</b> "+(iv.hora||'—')+"<br>";
+      h+='<b>Desc:</b> '+(iv.desc||'—')+"<br><b>Acción:</b> "+(iv.acc||'—');
+      if(iv.reportado) h+=" &nbsp;✅ <b>Reportado a autoridades</b>";
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+
+  // Tabla de no conformidades críticas
+  var ncItems=[];
+  for(var k in D){for(var si=0;si<D[k].secs.length;si++){var its=D[k].secs[si].its;for(var ii=0;ii<its.length;ii++){var it=its[ii];if(it.c&&checks[it.id]&&cumple[it.id]===false)ncItems.push({t:it.t,frente:D[k].label,cat:ncCat[it.id]||"—"});}}}
+  if(ncItems.length>0){
+    h+='<div style="border:2px solid #E63946;border-radius:7px;margin-bottom:12px;overflow:hidden">';
+    h+='<div style="background:#E63946;color:#fff;padding:7px 11px;font-weight:700;font-size:11px">⛔ TABLA DE NO CONFORMIDADES CRÍTICAS ('+ncItems.length+')</div>';
+    h+='<table style="width:100%;font-size:10px;border-collapse:collapse">';
+    h+='<thead><tr><th style="padding:5px 8px;background:#FEE2E2;color:#991B1B;text-align:left">Ítem</th><th style="padding:5px 8px;background:#FEE2E2;color:#991B1B;text-align:left">Frente</th><th style="padding:5px 8px;background:#FEE2E2;color:#991B1B;text-align:left">Categoría NC</th></tr></thead><tbody>';
+    ncItems.forEach(function(nc){
+      h+='<tr><td style="padding:5px 8px;border-bottom:1px solid #FEE2E2">'+nc.t+'</td><td style="padding:5px 8px;border-bottom:1px solid #FEE2E2">'+nc.frente+'</td><td style="padding:5px 8px;border-bottom:1px solid #FEE2E2">'+nc.cat+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+
+  // Resumen global
+  var rr="";
+  for(var k in D){var p=prog(k);rr+='<div style="display:flex;justify-content:space-between;font-size:10px;padding:3px 0;border-bottom:1px solid #F1F5F9"><span>'+D[k].em+" "+D[k].label+'</span><span>'+p.p+"% ("+p.d+"/"+p.t+") — "+(p.p===100?"CONFORME ✓":p.p>=60?"PARCIAL ⚠":"PENDIENTE ✗")+"</span></div>";}
+  h+='<div style="border:2px solid #E85D04;border-radius:7px;padding:10px 12px;margin-top:12px"><div style="font-size:12px;color:#C44B00;margin-bottom:7px;font-weight:700">📊 Resumen Global</div>'+rr+'<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px"><span>Score Ponderado:</span><span style="background:'+scBg+';color:'+scCol+';padding:1px 6px;border-radius:4px;font-weight:700">'+sc+'%</span></div><div style="height:8px;background:#F1F5F9;border-radius:4px;overflow:hidden;margin-top:7px"><div style="height:100%;background:linear-gradient(90deg,#E85D04,#FFBE0B);border-radius:4px;width:'+g.p+'%"></div></div></div>';
+
+  // Footer
+  h+='<div style="margin-top:12px;font-size:9px;color:#94A3B8;text-align:center;padding-top:7px;border-top:1px solid #E2E8F0">PMT v02 · INVIAS 2024 · Contrato LP-CARDIQUE-006-2025 · Generado: '+new Date().toLocaleString("es-CO")+'</div>';
+  return h;
+}
+
+// ============================================================
+// COMPARTIR ARCHIVO
+// ============================================================
+function compartirArchivo(){
+  var src=genHTMLLimpio();
+  var fn="PMT_v2_Campo.html";
+  var blob=new Blob([src],{type:"text/html;charset=utf-8"});
+  if(navigator.share&&navigator.canShare){
+    try{
+      var file=new File([blob],fn,{type:"text/html"});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:"PMT v2 — Checklist de Campo | Ciénaga de la Virgen"})
+          .then(function(){toast("✓ Archivo compartido","ok")})
+          .catch(function(ex){if(ex.name!=="AbortError")metodo2(blob,fn);});
+        return;
+      }
+    }catch(ex){}
+  }
+  metodo2(blob,fn);
+}
+
+function metodo2(blob,fn){
+  try{
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url;a.download=fn;a.style.display="none";
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},400);
+    toast("✓ Descargado — envíalo por WhatsApp o email","ok");
+  }catch(ex){
+    try{
+      var reader=new FileReader();
+      reader.onload=function(){
+        var a2=document.createElement("a");
+        a2.href=reader.result;a2.download=fn;a2.style.display="none";
+        document.body.appendChild(a2);a2.click();
+        setTimeout(function(){document.body.removeChild(a2);},400);
+        toast("✓ Descargado","ok");
+      };
+      reader.readAsDataURL(blob);
+    }catch(ex2){toast("⚠ Abre el menú del navegador y usa 'Guardar página'","err");}
+  }
+}
+
+function genHTMLLimpio(){
+  var c=document.documentElement.cloneNode(true);
+  c.querySelectorAll(".item.done").forEach(function(el){el.classList.remove("done");});
+  c.querySelectorAll(".chk").forEach(function(el){el.textContent="";});
+  c.querySelectorAll("textarea").forEach(function(el){el.textContent="";});
+  c.querySelectorAll(".inc-w input[type=text]").forEach(function(el){el.setAttribute("value","");});
+  c.querySelectorAll(".inc-w select option").forEach(function(o){o.removeAttribute("selected");});
+  c.querySelectorAll("#inp-fecha,#inp-residente,#inp-interventoria,#inp-cardique").forEach(function(el){el.setAttribute("value","");});
+  var pdfOv=c.querySelector("#pdf-ov"); if(pdfOv) pdfOv.style.display="none";
+  return "<!DOCTYPE html>\n"+c.outerHTML;
+}
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+function buildUI(){buildTabs();buildContent();buildNav();switchTab(activeTab,false);upd();}
+
+$("inp-fecha").addEventListener("change", save);
+$("inp-residente").addEventListener("input", save);
+$("inp-interventoria").addEventListener("input", save);
+$("inp-cardique").addEventListener("input", save);
+document.addEventListener("focusout", function(e){if(e.target.tagName==="TEXTAREA") save();});
+
+load();
+buildUI();
+if(!$("inp-fecha").value) $("inp-fecha").valueAsDate = new Date();
+</script>
+</body></html>
