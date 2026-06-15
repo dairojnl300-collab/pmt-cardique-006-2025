@@ -1119,9 +1119,38 @@ function copiarLegacy(txt){
 // ============================================================
 function abrirPDF(){
   if(!validarAntesDe("generar PDF")) return;
-  $("pdf-body").innerHTML = genPrintHTML();
-  $("pdf-ov").style.display = "block";
-  $("pdf-ov").scrollTop = 0;
+  var html = genPrintHTML();
+  var fullHTML = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+    + '<title>PMT — Inspección de Campo | LP-CARDIQUE-006-2025</title>'
+    + '<style>'
+    + 'body{font-family:Arial,sans-serif;font-size:11px;color:#111;margin:0;padding:16px;max-width:780px;margin:auto}'
+    + '.no-print{position:fixed;top:0;left:0;right:0;background:#E85D04;padding:10px 16px;display:flex;gap:8px;z-index:999}'
+    + '.no-print button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer}'
+    + '.btn-imp{background:#fff;color:#E85D04}'
+    + '.btn-cer{background:rgba(255,255,255,.2);color:#fff}'
+    + '@media print{.no-print{display:none!important}body{padding:0}}'
+    + '</style></head><body>'
+    + '<div class="no-print">'
+    + '<button class="btn-imp" onclick="window.print()">🖨️ Guardar como PDF</button>'
+    + '<button class="btn-cer" onclick="window.close()">✕ Cerrar</button>'
+    + '</div>'
+    + '<div style="margin-top:56px">' + html + '</div>'
+    + '</body></html>';
+  var win = window.open('', '_blank');
+  if(win){
+    win.document.write(fullHTML);
+    win.document.close();
+  } else {
+    // Fallback iOS: blob descargable
+    var blob = new Blob([fullHTML], {type:'text/html;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'PMT_Inspeccion.html'; a.style.display='none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},400);
+    toast("✓ Descargado — ábrelo y usa Compartir → Imprimir","ok");
+  }
 }
 
 function cerrarPDF(){$("pdf-ov").style.display="none";}
